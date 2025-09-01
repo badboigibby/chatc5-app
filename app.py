@@ -33,7 +33,7 @@ app = Flask(__name__, template_folder="templates")
 # Serve the Sky Chat UI
 @app.route("/")
 def home():
-    return render_template("skychat.html")
+    return render_template("chat.html")
 
 # Chat API endpoint
 @app.route("/chat", methods=["POST"])
