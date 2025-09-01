@@ -1,2 +1,4 @@
 flask
-llama-cpp-python>=0.2.56
+llama-cpp-python
+huggingface-hub
+gitpython
