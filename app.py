@@ -1,14 +1,8 @@
-# app.py
-# Hugging Face Space backend for ChatC5 model
-
+import os
 from flask import Flask, request, jsonify
 from llama_cpp import Llama
-import os
 
-# ----------------------------
-# Config
-# ----------------------------
-MODEL_REPO = "badboigibby/chatc5-7.12B"  # Hugging Face model repo
+MODEL_REPO = "badboigibby/chatc5-7.12B"
 MODEL_FILE = "chatc5.gguf"
 
 SYSTEM_PROMPT = (
@@ -17,28 +11,19 @@ SYSTEM_PROMPT = (
     "Only output full HTML documents if the user explicitly requests HTML."
 )
 
-# ----------------------------
-# Load model
-# ----------------------------
 llm = Llama.from_pretrained(
     repo_id=MODEL_REPO,
     filename=MODEL_FILE,
     n_ctx=2048,
-    n_threads=2,    # keep lower for Spaces
+    n_threads=2,
     n_batch=512
 )
 
-# ----------------------------
-# Flask app
-# ----------------------------
 app = Flask(__name__)
 
 @app.route("/")
-def index():
-    return jsonify({
-        "message": "ChatC5 backend running. Use POST /chat with JSON {message: \"...\"}.",
-        "frontend": "https://badboigibby.github.io/chatc5/"
-    })
+def home():
+    return {"message": "ChatC5 backend running on Railway!"}
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -60,10 +45,6 @@ def chat():
     reply = output["choices"][0]["message"]["content"].strip()
     return jsonify({"reply": reply})
 
-
-# ----------------------------
-# Entrypoint
-# ----------------------------
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 7860))
+    port = int(os.environ.get("PORT", 5000))  # Railway injects PORT
     app.run(host="0.0.0.0", port=port)

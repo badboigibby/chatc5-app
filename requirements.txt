@@ -1,2 +1,2 @@
-streamlit
+flask
 llama-cpp-python>=0.2.56
