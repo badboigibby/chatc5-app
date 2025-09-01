@@ -1,9 +1,12 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from llama_cpp import Llama
 
-MODEL_REPO = "badboigibby/chatc5-7.12B"
-MODEL_FILE = "chatc5.gguf"
+# ----------------------------
+# Config
+# ----------------------------
+MODEL_REPO = "badboigibby/chatc5-7.12B"  # Hugging Face repo
+MODEL_FILE = "chatc5.gguf"               # Local model file
 
 SYSTEM_PROMPT = (
     "You are ChatC5 created by OAG. "
@@ -11,6 +14,9 @@ SYSTEM_PROMPT = (
     "Only output full HTML documents if the user explicitly requests HTML."
 )
 
+# ----------------------------
+# Load Model
+# ----------------------------
 llm = Llama.from_pretrained(
     repo_id=MODEL_REPO,
     filename=MODEL_FILE,
@@ -19,16 +25,24 @@ llm = Llama.from_pretrained(
     n_batch=512
 )
 
-app = Flask(__name__)
+# ----------------------------
+# Flask App
+# ----------------------------
+app = Flask(__name__, template_folder="templates")
 
+# Serve the Sky Chat UI
 @app.route("/")
 def home():
-    return {"message": "ChatC5 backend running on Railway!"}
+    return render_template("skychat.html")
 
+# Chat API endpoint
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.get_json()
     user_message = data.get("message", "")
+
+    if not user_message:
+        return jsonify({"error": "No message provided"}), 400
 
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -45,6 +59,9 @@ def chat():
     reply = output["choices"][0]["message"]["content"].strip()
     return jsonify({"reply": reply})
 
+# ----------------------------
+# Run App
+# ----------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Railway injects PORT
     app.run(host="0.0.0.0", port=port)
