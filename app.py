@@ -20,8 +20,8 @@ SYSTEM_PROMPT = (
 llm = Llama.from_pretrained(
     repo_id=MODEL_REPO,
     filename=MODEL_FILE,
-    n_ctx=2048,
-    n_threads=2,
+    n_ctx=4096,
+    n_threads=4,
     n_batch=512
 )
 
@@ -53,7 +53,7 @@ def chat():
         messages=messages,
         stream=False,
         max_tokens=1024,
-        temperature=0.4
+        temperature=0.3
     )
 
     reply = output["choices"][0]["message"]["content"].strip()
